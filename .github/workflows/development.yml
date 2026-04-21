@@ -22,17 +22,17 @@ jobs:
         run: |
           if [ -n "$MAVEN_REPO_USERNAME" ] && [ -n "$MAVEN_REPO_TOKEN" ]; then
             mkdir -p "$HOME/.m2"
-            cat > "$HOME/.m2/settings.xml" << EOF
-            <settings>
-              <servers>
-                <server>
-                  <id>TMMC-IS@Local</id>
-                  <username>${MAVEN_REPO_USERNAME}</username>
-                  <password>${MAVEN_REPO_TOKEN}</password>
-                </server>
-              </servers>
-            </settings>
-            EOF
+            {
+              echo '<settings>'
+              echo '  <servers>'
+              echo '    <server>'
+              echo '      <id>TMMC-IS@Local</id>'
+              echo "      <username>${MAVEN_REPO_USERNAME}</username>"
+              echo "      <password>${MAVEN_REPO_TOKEN}</password>"
+              echo '    </server>'
+              echo '  </servers>'
+              echo '</settings>'
+            } > "$HOME/.m2/settings.xml"
           fi
         env:
           MAVEN_REPO_USERNAME: ${{ secrets.MAVEN_REPO_USERNAME }}
