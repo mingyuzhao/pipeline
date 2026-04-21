@@ -1,0 +1,24 @@
+version: '3.9'
+services:
+
+  @project.artifactId@:
+    image: tmmc.logistics/@project.artifactId@:@project.version@
+    ports:
+        - 9050:80
+    volumes:
+        - type: bind
+          source: "/mnt/work/docker-applications/@project.artifactId@/config/nginx.conf"
+          target: "/etc/nginx/nginx.conf"
+          read_only: true
+        - type: bind
+          source: "/mnt/work/docker-applications/@project.artifactId@/config/conf.d"
+          target: "/etc/nginx/conf.d"
+          read_only: true
+        - type: bind
+          source: "/mnt/work/docker-applications/@project.artifactId@/logs"
+          target: "/var/log/nginx"
+    hostname: @project.artifactId@
+    container_name: @project.artifactId@
+    environment:
+        - TZ=America/Toronto
+    restart: unless-stopped

@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+				                     http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.toyota.tmmc</groupId>
+	<artifactId>tectris-ui</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>tectris-ui</name>
+	<description>TECTRIS UI Project</description>
+
+	<developers>
+		<developer>
+			<name>Ming Zhao</name>
+			<email>ming.zhao@toyota.com</email>
+		</developer>
+	</developers>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>13</java.version>
+		<keycloak.version>11.0.3</keycloak.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>TMMC-IS@Local</id>
+			<url>https://pkgs.dev.azure.com/TMMC-IS/_packaging/TMMC-IS%40Local/maven/v1</url>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>TMMC-IS@Local</id>
+			<url>https://pkgs.dev.azure.com/TMMC-IS/_packaging/TMMC-IS%40Local/maven/v1</url>
+		</repository>
+	</distributionManagement>
+
+	<scm>
+		<connection>scm:git:https://github.com/tmmc-is/Ext-Logistics-TECTRIS.git</connection>
+		<developerConnection>scm:git:https://github.com/tmmc-is/Ext-Logistics-TECTRIS.git</developerConnection>
+		<url>https://github.com/tmmc-is/Ext-Logistics-TECTRIS</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>docker-config</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>1.10.4</version>
+
+				<configuration>
+					<nodeVersion>v20.11.1</nodeVersion>
+					<!-- optional: with node version greater than 4.0.0 will use npm provided by node distribution <npmVersion>2.15.9</npmVersion> -->
+					<!-- optional: where to download node and npm from. Defaults to https://nodejs.org/dist/ <downloadRoot>http://myproxy.example.org/nodejs/</downloadRoot> -->
+					<!-- The working directory is where you've put package.json and your frontend configuration files (Gruntfile.js or gulpfile.js etc). The default working directory is your project's base directory (the same directory as your pom.xml). You can change
+					the working directory if you want: <workingDirectory>src/main/frontend</workingDirectory> -->
+					<!-- The installation directory is the folder where your node and npm are installed. You can set this property on the different goals. Or choose to set it for all the goals, in the maven configuration. -->
+					<installDirectory>node_maven_build_install</installDirectory>
+					<!-- If you need to pass some variable to Node, you can set that using the property environmentVariables in configuration tag of an execution like this: -->
+					<environmentVariables>
+						<benvironment>${benvironment}</benvironment>
+					</environmentVariables>
+				</configuration>
+
+				<executions>
+
+					<execution>
+						<!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
+						<id>install node and npm</id>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<!-- optional: default phase is "generate-resources" -->
+						<phase>generate-resources</phase>
+					</execution>
+
+					<execution>
+						<id>npm install</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+
+						<!-- optional: default phase is "generate-resources" -->
+						<phase>generate-resources</phase>
+
+						<configuration>
+							<!-- optional: The default argument is actually "install", so unless you need to run some other npm command, you can remove this whole <configuration> section. -->
+							<arguments>install --legacy-peer-deps</arguments>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>npm run build</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+
+						<!-- optional: default phase is "generate-resources" -->
+						<phase>generate-resources</phase>
+
+						<configuration>
+							<arguments>run build:${benvironment}</arguments>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+
+			<!-- skip angular jar creation -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<skipIfEmpty>true</skipIfEmpty>
+				</configuration>
+			</plugin>
+
+			<!-- clean angular -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>dist</directory>
+						</fileset>
+						<!-- <fileset> <directory>node_maven_build_install</directory> </fileset> -->
+					</filesets>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<configuration>
+					<localCheckout>true</localCheckout>
+					<pushChanges>false</pushChanges>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
